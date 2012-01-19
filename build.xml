@@ -1,0 +1,55 @@
+<project name="HadoopV2" basedir="." default="build.jar">
+	<property environment="env" />
+	<property name="dest.dir" value="target" />
+	
+	<property name="dest.dir.classes" value="${dest.dir}/classes" />
+	<property name="dest.dir.release" value="${dest.dir}/release" />
+	
+	<path id="run.class.path">
+		<pathelement location="." />
+		<fileset dir="./lib/">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="${dest.dir.release}/HadoopV2.jar" />
+	</path>
+
+	<path id="build.class.path">
+		<fileset dir="./lib/">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+	
+	<target name="clean">
+		<delete dir="${dest.dir}" />
+	</target>
+	
+	<target name="compile">
+		<javac srcdir="src" destdir="${dest.dir.classes}"> 
+			<classpath refid="build.class.path" />
+		</javac>
+	</target>
+
+	<target name="prepare">
+		<mkdir dir="${dest.dir}" />
+		<mkdir dir="${dest.dir.classes}" />
+		<mkdir dir="${dest.dir.release}" />
+		<mkdir dir="${dest.dir.classes}/META-INF" />
+	</target>
+	
+	<target name="build.jar" depends="clean,prepare,compile">
+		<jar basedir="${dest.dir.classes}" destfile="${dest.dir.release}/HadoopV2.jar" />
+	</target>
+	
+	<target name="run" depends="build.jar" description="run the default test">
+        	<property name="myclasspath" refid="run.class.path"/>
+        	<echo message="Classpath = ${myclasspath}"/>
+
+        	<java classname="com.apple.ist.est.esp.tool.test.RaiseAlert" fork="true" >
+			<sysproperty key="alert.main.config.file" value="resources/config/apple/esp/AlertConfig.properties"/>
+			<sysproperty key="log4j.configuration" value="file:resources/config/log4j_local.xml"/>
+        		<classpath refid="run.class.path">
+			</classpath>
+        	</java>
+	</target>
+
+</project>
